@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Projetos de Inovação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-950:#160933;
+    --ink-900:#1e0f47;
+    --violet-700:#5b21b6;
+    --violet-600:#7c3aed;
+    --violet-100:#efe9fb;
+    --lilac-50:#f7f5fd;
+    --green-600:#15803d;
+    --green-50:#eefbf1;
+    --amber-600:#c2660a;
+    --amber-50:#fff6e8;
+    --slate-500:#6b6580;
+    --slate-300:#d8d3e8;
+    --card:#ffffff;
+    --border:#e9e4f6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background:var(--lilac-50);
+    color:var(--ink-950);
+    padding:32px 20px 60px;
+  }
+  .wrap{max-width:1400px;margin:0 auto;}
+
+  /* HEADER */
+  .header{
+    background:linear-gradient(120deg,var(--ink-950) 0%,var(--ink-900) 55%,var(--violet-700) 130%);
+    border-radius:20px;
+    padding:34px 40px;
+    display:flex;
+    align-items:center;
+    gap:22px;
+    color:#fff;
+    box-shadow:0 20px 40px -18px rgba(30,15,71,0.55);
+    position:relative;
+    overflow:hidden;
+  }
+  .header::after{
+    content:"";
+    position:absolute; right:-60px; top:-60px;
+    width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
+  }
+  .header-icon{
+    width:58px;height:58px;border-radius:16px;
+    background:rgba(255,255,255,0.12);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .header-icon svg{width:30px;height:30px;}
+  .header h1{
+    font-family:'Manrope',sans-serif;
+    font-size:28px; font-weight:800; letter-spacing:0.3px; margin:0 0 4px;
+    text-transform:uppercase;
+  }
+  .header p{
+    margin:0; font-size:14px; font-weight:600; color:#c9bdf0; letter-spacing:0.4px; text-transform:uppercase;
+  }
+
+  /* KPI ROW */
+  .kpis{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+    margin:22px 0;
+  }
+  .kpi{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 20px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .kpi .dot{
+    width:42px;height:42px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:18px; font-weight:800; color:#fff;
+    background:var(--violet-600); flex-shrink:0;
+  }
+  .kpi .num{font-family:'Manrope',sans-serif; font-size:22px; font-weight:800; line-height:1;}
+  .kpi .lbl{font-size:11px; font-weight:600; color:var(--slate-500); text-transform:uppercase; letter-spacing:0.3px; margin-top:3px;}
+
+  /* TABLE CARD */
+  .table-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 12px 30px -20px rgba(30,15,71,0.35);
+  }
+  .table-scroll{overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; min-width:1500px;}
+  thead th{
+    background:var(--ink-900);
+    color:#fff;
+    font-family:'Manrope',sans-serif;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    padding:14px 16px;
+    text-align:left;
+    white-space:nowrap;
+  }
+  tbody td{
+    padding:16px;
+    border-bottom:1px solid var(--border);
+    font-size:13.5px;
+    vertical-align:top;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#faf8ff;}
+
+  .id-badge{
+    background:var(--violet-700); color:#fff;
+    font-family:'Manrope',sans-serif; font-weight:800; font-size:13px;
+    padding:6px 10px; border-radius:8px; display:inline-block;
+  }
+  .proj-name{font-family:'Manrope',sans-serif; font-weight:800; font-size:14px; color:var(--ink-950); white-space:nowrap;}
+  .proj-sub{font-size:11.5px; color:var(--slate-500); margin-top:2px;}
+
+  .badge{
+    display:inline-flex; align-items:center; gap:7px;
+    padding:7px 12px; border-radius:9px; font-size:12px; font-weight:700; white-space:nowrap;
+  }
+  .badge .pip{width:7px;height:7px;border-radius:50%;}
+  .badge.exec{background:var(--green-50); color:var(--green-600);}
+  .badge.exec .pip{background:var(--green-600);}
+  .badge.init{background:var(--violet-100); color:var(--violet-700);}
+  .badge.init .pip{background:var(--violet-600);}
+  .badge.mvp{background:var(--amber-50); color:var(--amber-600);}
+  .badge.mvp .pip{background:var(--amber-600);}
+
+  .bar-wrap{width:120px;height:8px;border-radius:10px;background:#eae6f7;overflow:hidden;margin-top:6px;}
+  .bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#22c55e,#15803d);}
+  .pct{font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;}
+  .pct.pending{color:var(--amber-600); font-size:11.5px; text-transform:uppercase;}
+
+  .money{font-family:'Manrope',sans-serif;font-weight:700;color:var(--ink-950); white-space:nowrap;}
+  .tir{font-family:'Manrope',sans-serif;font-weight:800;color:var(--green-600);}
+  .muted{color:var(--slate-500); font-style:italic; font-size:12.5px;}
+  .details{max-width:230px; color:#413a5c; line-height:1.4;}
+  .date{white-space:nowrap; font-weight:600; font-size:12.5px;}
+  .date.na{color:var(--slate-500); font-weight:400;}
+
+  .footnote{
+    margin-top:18px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 22px;
+    font-size:12.5px;
+    color:var(--slate-500);
+    line-height:1.6;
+  }
+  .footnote b{color:var(--ink-950);}
+
+  /* META BAR (data de atualização + legenda) */
+  .meta-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    margin:18px 2px 4px;
+  }
+  .updated{
+    font-size:12px; font-weight:600; color:var(--slate-500);
+    display:flex; align-items:center; gap:6px;
+  }
+  .updated .live-dot{
+    width:7px;height:7px;border-radius:50%;background:var(--green-600);
+    box-shadow:0 0 0 3px var(--green-50);
+  }
+  .legend{display:flex; gap:14px; flex-wrap:wrap;}
+  .legend span{
+    font-size:11.5px; font-weight:600; color:var(--slate-500);
+    display:flex; align-items:center; gap:6px;
+  }
+  .legend .pip{width:8px;height:8px;border-radius:50%;}
+
+  .print-btn{
+    background:var(--violet-600); color:#fff; border:none;
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:12.5px;
+    padding:9px 16px; border-radius:10px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:background .15s ease;
+  }
+  .print-btn:hover{background:var(--violet-700);}
+
+  @media (max-width:900px){
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .header{flex-direction:column; text-align:center;}
+    .meta-bar{flex-direction:column; align-items:flex-start;}
+  }
+
+  @media print{
+    body{background:#fff; padding:0;}
+    .print-btn{display:none;}
+    .table-card, .header, .kpi, .footnote{box-shadow:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2Z"/></svg>
+    </div>
+    <div>
+      <h1>Inovação e Melhoria Contínua</h1>
+      <p>Painel Financeiro de Projetos &middot; Iniciativas e Maturidade</p>
+    </div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="dot">5</div><div><div class="num">5</div><div class="lbl">Iniciativas ativas</div></div></div>
+    <div class="kpi"><div class="dot">2</div><div><div class="num">2</div><div class="lbl">Em execução</div></div></div>
+    <div class="kpi"><div class="dot">1</div><div><div class="num">1</div><div class="lbl">Em MVP</div></div></div>
+    <div class="kpi"><div class="dot">R$</div><div><div class="num">~R$ 1,03M</div><div class="lbl">Invest. inicial mapeado</div></div></div>
+    <div class="kpi"><div class="dot">%</div><div><div class="num">3</div><div class="lbl">Projetos com TIR &gt; 30%</div></div></div>
+  </div>
+
+  <div class="meta-bar">
+    <div class="updated"><span class="live-dot"></span>Atualizado em 24/07/2026</div>
+    <div class="legend">
+      <span><span class="pip" style="background:#5b21b6;"></span>Iniciação</span>
+      <span><span class="pip" style="background:#15803d;"></span>Execução</span>
+      <span><span class="pip" style="background:#c2660a;"></span>MVP / Pendente</span>
+    </div>
+    <button class="print-btn" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Exportar / Imprimir
+    </button>
+  </div>
+
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome do Projeto</th>
+            <th>Prazo Início</th>
+            <th>Prazo Final</th>
+            <th>Deadline</th>
+            <th>Investimento Inicial</th>
+            <th>PayBack</th>
+            <th>PayBack Ajustado</th>
+            <th>Taxa Interna de Retorno</th>
+            <th>Fase do Projeto</th>
+            <th>% de Avanço</th>
+            <th>Detalhes</th>
+            <th>Prazo</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td><span class="id-badge">3.1</span></td>
+            <td><div class="proj-name">MIRA</div><div class="proj-sub">Monitoramento Inteligente e Roteirização Automatizada</div></td>
+            <td><span class="date">Mar/2026</span></td>
+            <td><span class="date">Abr/2027</span></td>
+            <td><span class="date">14 meses</span></td>
+            <td><span class="money">R$ 142.194</span></td>
+            <td><span class="date">1 ano e 1 mês</span></td>
+            <td><span class="date">1 ano e 3 meses</span></td>
+            <td><span class="tir">79,7%</span></td>
+            <td><span class="badge init"><span class="pip"></span>Fase de Iniciação</span></td>
+            <td><div class="pct">0%</div><div class="bar-wrap"><div class="bar-fill" style="width:0%;background:#d8d3e8;"></div></div></td>
+            <td><div class="details">Estruturação do projeto e definição de escopo.</div></td>
+            <td><span class="date na">–</span></td>
+          </tr>
+
+          <tr>
+            <td><span class="id-badge">3.2</span></td>
+            <td><div class="proj-name">PRECIFICAÇÃO POR IA</div><div class="proj-sub">Precificação inteligente</div></td>
+            <td><span class="date">Abr/2026</span></td>
+            <td><span class="date">Set/2026</span></td>
+            <td><span class="date">6 meses</span></td>
+            <td><span class="money">R$ 272.171</span></td>
+            <td><span class="date">2 anos e 9 meses</span></td>
+            <td><span class="date">2 anos e 7 meses</span></td>
+            <td><span class="tir">38,78%</span></td>
+            <td><span class="badge exec"><span class="pip"></span>Fase de Execução</span></td>
+            <td><div class="pct">75%</div><div class="bar-wrap"><div class="bar-fill" style="width:75%;"></div></div></td>
+            <td><div class="details">75% de avanço.</div></td>
+            <td><span class="date">31/07/2026</span></td>
+          </tr>
+
+          <tr>
+            <td><span class="id-badge">3.3</span></td>
+            <td><div class="proj-name">IA COB</div><div class="proj-sub">Cenário White Label (MVP)</div></td>
+            <td><span class="date na">–</span></td>
+            <td><span class="date na">–</span></td>
+            <td><span class="date">~3 meses (MVP)</span></td>
+            <td><span class="money">R$ 97.522</span><br><span class="muted">pendente de aprovação</span></td>
+            <td><span class="muted">Não apurado</span></td>
+            <td><span class="muted">Não apurado</span></td>
+            <td><span class="muted">ROI 12m: -61,6%<br>ROI 24m: 19,2%<br>ROI 36m: 46,2%</span></td>
+            <td><span class="badge mvp"><span class="pip"></span>Fase MVP</span></td>
+            <td><div class="pct pending">Pendente de aprovação</div></td>
+            <td><div class="details">Pendente de aprovação.</div></td>
+            <td><span class="date na">–</span></td>
+          </tr>
+
+          <tr>
+            <td><span class="id-badge">3.4</span></td>
+            <td><div class="proj-name">DATA LAKE</div><div class="proj-sub">DATALAKE MEF</div></td>
+            <td><span class="date">Out/2026</span></td>
+            <td><span class="date">Fev/2027</span></td>
+            <td><span class="date">5 meses</span></td>
+            <td><span class="money">R$ 515.908</span></td>
+            <td><span class="date">2 anos e 3 meses</span></td>
+            <td><span class="date">2 anos e 6 meses</span></td>
+            <td><span class="tir">51,32%</span></td>
+            <td><span class="badge exec"><span class="pip"></span>Fase de Execução</span></td>
+            <td><div class="pct">15%</div><div class="bar-wrap"><div class="bar-fill" style="width:15%;"></div></div></td>
+            <td><div class="details">Em desenvolvimento.</div></td>
+            <td><span class="date">28/02/2027</span></td>
+          </tr>
+
+          <tr>
+            <td><span class="id-badge">3.5</span></td>
+            <td><div class="proj-name">AUTOMAÇÃO DO PROJETO DE VENDAS</div></td>
+            <td><span class="date na">–</span></td>
+            <td><span class="date na">–</span></td>
+            <td><span class="date na">–</span></td>
+            <td><span class="muted">Não disponível nos arquivos compartilhados</span></td>
+            <td><span class="muted">Não disponível</span></td>
+            <td><span class="muted">Não disponível</span></td>
+            <td><span class="muted">Não disponível</span></td>
+            <td><span class="badge exec"><span class="pip"></span>Fase de Execução</span></td>
+            <td><div class="pct">35%</div><div class="bar-wrap"><div class="bar-fill" style="width:35%;"></div></div></td>
+            <td><div class="details">Em execução.</div></td>
+            <td><span class="date">31/07/2026</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footnote">
+    <b>Fontes:</b> business case de viabilidade (MIRA, Precificação por IA e Data Lake), TAP/análise de cenários (IA COB) e painel de status enviado (fases, % de avanço e prazos de entrega).
+    <b>Observações:</b> para IA COB foi considerado o cenário "White Label" (menor investimento e prazo, usado como MVP), ainda pendente de aprovação — por isso PayBack e TIR não estão consolidados.
+    Para o projeto 3.5 (Automação do Projeto de Vendas) não havia planilha ou apresentação de viabilidade nos links compartilhados; os dados financeiros ficam marcados como não disponíveis até que a fonte seja enviada.
+  </div>
+
+</div>
+</body>
+</html>
