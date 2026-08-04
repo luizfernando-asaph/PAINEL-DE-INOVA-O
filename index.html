@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão de Tempo das Equipes · Dados e Inovação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-950:#160933; --ink-900:#1e0f47;
+    --slate-500:#6b6580; --slate-300:#d8d3e8;
+    --card:#ffffff; --border:#e9e4f6; --bg:#f7f5fd;
+    --green-600:#15803d; --green-50:#eefbf1;
+    --amber-600:#c2660a; --amber-50:#fff6e8;
+    --red-600:#b91c1c; --red-50:#fdecec;
+    --blue-600:#1d4ed8; --blue-50:#eef2ff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink-950);padding:26px 20px 60px;}
+  .wrap{max-width:1500px;margin:0 auto;}
+
+  .top{
+    background:#150a30;border-radius:16px;padding:20px 28px;display:flex;align-items:center;gap:18px;color:#fff;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.45);margin-bottom:20px;flex-wrap:wrap;
+  }
+  .top-logo{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .top h1{font-family:'Manrope',sans-serif;font-size:19px;font-weight:800;margin:0 0 3px;letter-spacing:.2px;}
+  .top p{margin:0;font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.72);text-transform:uppercase;letter-spacing:.4px;}
+  .top-ref{margin-left:auto;background:rgba(255,255,255,0.08);border-radius:10px;padding:9px 16px;font-size:11px;font-weight:700;letter-spacing:.3px;text-align:right;}
+  .top-ref b{display:block;font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:800;}
+
+  .tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:13.5px;
+    padding:12px 22px;border-radius:12px;border:1px solid var(--border);
+    background:#fff;color:var(--slate-500);cursor:pointer;
+    display:flex;align-items:center;gap:8px;transition:all .15s ease;
+  }
+  .tab-btn:hover{color:var(--ink-950);}
+  .tab-btn.active{color:#fff;border-color:transparent;box-shadow:0 10px 24px -14px rgba(0,0,0,0.4);}
+  .tab-btn .dotc{width:8px;height:8px;border-radius:50%;}
+  #tab-sankhya.active{background:linear-gradient(120deg,#5c1d09,#ea580c);}
+  #tab-capacidade.active{background:linear-gradient(120deg,#1e1b4b,#4f46e5);}
+  #tab-geral.active{background:linear-gradient(120deg,#0f2e26,#1f5b47);}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .header{
+    border-radius:20px;padding:26px 34px;display:flex;align-items:center;gap:20px;color:#fff;
+    box-shadow:0 20px 40px -18px rgba(0,0,0,0.35);position:relative;overflow:hidden;
+    background:linear-gradient(120deg,var(--h1) 0%,var(--h2) 100%);margin-bottom:18px;
+  }
+  .header::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%);}
+  .header-icon{width:52px;height:52px;border-radius:15px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .header-icon svg{width:26px;height:26px;}
+  .header h2{font-family:'Manrope',sans-serif;font-size:23px;font-weight:800;margin:0 0 4px;text-transform:uppercase;letter-spacing:.3px;}
+  .header p{margin:0;font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.78);letter-spacing:.3px;}
+  .header .ref{margin-left:auto;text-align:right;font-size:12px;color:rgba(255,255,255,0.8);}
+  .header .ref b{display:block;font-family:'Manrope',sans-serif;font-size:14.5px;color:#fff;}
+
+  .kpis{display:grid;gap:14px;margin:18px 0;}
+  .kpis.cols-4{grid-template-columns:repeat(4,1fr);}
+  .kpis.cols-5{grid-template-columns:repeat(5,1fr);}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;display:flex;align-items:center;gap:13px;}
+  .kpi .dot{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;background:var(--acc);}
+  .kpi .num{font-family:'Manrope',sans-serif;font-size:19px;font-weight:800;line-height:1.1;}
+  .kpi .lbl{font-size:10.3px;font-weight:600;color:var(--slate-500);text-transform:uppercase;letter-spacing:.3px;margin-top:3px;}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 12px 28px -20px rgba(0,0,0,0.25);margin-bottom:18px;}
+  .card-head{padding:16px 22px;border-bottom:1px solid var(--border);font-family:'Manrope',sans-serif;font-weight:800;font-size:14.5px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .card-head span.sub{font-family:'Inter',sans-serif;font-weight:500;font-size:11.5px;color:var(--slate-500);text-transform:none;}
+  .card-body{padding:18px 22px;}
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:760px;}
+  thead th{background:var(--ink-900);color:#fff;font-family:'Manrope',sans-serif;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:11px 13px;text-align:left;white-space:nowrap;}
+  tbody td{padding:12px 13px;border-bottom:1px solid var(--border);font-size:12.5px;vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#faf9ff;}
+  .name{font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;}
+  .muted{color:var(--slate-500);font-size:11.5px;}
+  .pct{font-family:'Manrope',sans-serif;font-weight:800;font-size:13.5px;}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:700;white-space:nowrap;}
+  .pill .pip{width:6px;height:6px;border-radius:50%;}
+  .pill.ok{background:var(--green-50);color:var(--green-600);}
+  .pill.ok .pip{background:var(--green-600);}
+  .pill.warn{background:var(--amber-50);color:var(--amber-600);}
+  .pill.warn .pip{background:var(--amber-600);}
+  .pill.risk{background:var(--red-50);color:var(--red-600);}
+  .pill.risk .pip{background:var(--red-600);}
+  .pill.na{background:#f1eefb;color:var(--slate-500);}
+  .pill.na .pip{background:var(--slate-500);}
+  .pill.info{background:var(--blue-50);color:var(--blue-600);}
+  .pill.info .pip{background:var(--blue-600);}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .filters select, .filters input{
+    font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--ink-950);
+    border:1px solid var(--border);border-radius:9px;padding:8px 12px;background:#fff;outline:none;
+  }
+  .filters select:focus, .filters input:focus{border-color:var(--acc);}
+  .filters label{font-size:10.5px;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.3px;margin-right:4px;}
+
+  .jira-link{color:var(--acc);font-weight:700;text-decoration:none;}
+  .jira-link:hover{text-decoration:underline;}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+
+  .stackbar{height:22px;border-radius:8px;overflow:hidden;display:flex;width:100%;background:#eae6f7;}
+  .stackbar span{height:100%;display:block;}
+  .stackbar .seg-proj{background:linear-gradient(90deg,#818cf8,#4f46e5);}
+  .stackbar .seg-sust{background:linear-gradient(90deg,#fbbf24,#c2660a);}
+  .stackbar .seg-gestao{background:linear-gradient(90deg,#5eead4,#0f766e);}
+  .legend-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:11px;font-weight:700;color:var(--slate-500);}
+  .legend-row .sq{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:middle;}
+
+  .cap-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;}
+  .cap-card .cap-name{font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;margin-bottom:2px;}
+  .cap-card .cap-total{font-size:11px;color:var(--slate-500);font-weight:700;margin-bottom:10px;}
+  .cap-legend-mini{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;color:var(--slate-500);margin-top:8px;}
+
+  .colab-toggle{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .colab-btn{
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:12.5px;padding:9px 16px;border-radius:10px;
+    border:1px solid var(--border);background:#fff;color:var(--slate-500);cursor:pointer;
+  }
+  .colab-btn.active{background:var(--acc);color:#fff;border-color:transparent;}
+
+  .timetable{width:100%;border-collapse:separate;border-spacing:6px;}
+  .timetable th{background:none;color:var(--ink-950);font-family:'Manrope',sans-serif;font-size:10.5px;font-weight:800;text-transform:uppercase;text-align:center;padding:4px;}
+  .timetable td{vertical-align:top;padding:0;}
+  .tt-cell{
+    background:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 10px;font-size:11px;min-height:78px;height:100%;
+  }
+  .tt-cell .tt-bloco{font-size:9px;font-weight:800;text-transform:uppercase;color:var(--slate-500);letter-spacing:.3px;margin-bottom:4px;}
+  .tt-cell .tt-frente{font-family:'Manrope',sans-serif;font-weight:700;font-size:11.5px;margin-bottom:4px;line-height:1.25;}
+  .tt-cell .tt-tipo{display:inline-block;margin-bottom:5px;}
+  .tt-cell .tt-atividade{color:var(--slate-500);font-size:10.5px;line-height:1.35;}
+  .tt-cell.t-proj{border-left:4px solid #4f46e5;}
+  .tt-cell.t-sust{border-left:4px solid #c2660a;}
+  .tt-cell.t-gestao{border-left:4px solid #0f766e;}
+  .tt-jira{font-size:9.5px;font-weight:700;color:var(--acc);text-decoration:none;display:inline-block;margin-top:4px;}
+  .tt-jira:hover{text-decoration:underline;}
+
+  .flow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+  .flow-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px 18px;}
+  .flow-card .flow-title{font-family:'Manrope',sans-serif;font-weight:800;font-size:13px;margin-bottom:8px;color:var(--acc);}
+  .flow-card .flow-desc{font-size:12px;line-height:1.55;color:var(--ink-950);}
+
+  .footnote{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;font-size:12px;color:var(--slate-500);line-height:1.65;}
+  .footnote b{color:var(--ink-950);}
+
+  @media (max-width:1100px){
+    .kpis.cols-4,.kpis.cols-5{grid-template-columns:repeat(2,1fr);}
+    .two-col,.three-col,.four-col,.flow-grid{grid-template-columns:1fr;}
+    .header{flex-direction:column;text-align:center;}
+    .header .ref{margin-left:0;text-align:center;}
+    .timetable{display:block;overflow-x:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="top-logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+    <div>
+      <h1>GESTÃO DE TEMPO DAS EQUIPES</h1>
+      <p>Equipe de Dados e Inovação &middot; Consultas Sankhya · Capacidade · Visão Geral</p>
+    </div>
+    <div class="top-ref">FONTE: PLANILHA "2025_1º SEMESTRE_PAINEL DE INDICADORES"<b id="top-date">Referência: 04/08/2026</b></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-sankhya" onclick="showPanel('sankhya')"><span class="dotc" style="background:#ea580c;"></span>Consultas Sankhya</button>
+    <button class="tab-btn" id="tab-capacidade" onclick="showPanel('capacidade')"><span class="dotc" style="background:#4f46e5;"></span>Gestão da Capacidade</button>
+    <button class="tab-btn" id="tab-geral" onclick="showPanel('geral')"><span class="dotc" style="background:#1f5b47;"></span>Visão Geral</button>
+  </div>
+
+  <!-- ===================== CONSULTAS SANKHYA ===================== -->
+  <section id="sankhya" class="panel active" style="--h1:#5c1d09;--h2:#ea580c;--acc:#ea580c;">
+    <div class="header">
+      <div class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+      <div>
+        <h2>Priorização de Consultas ao Sankhya</h2>
+        <p>Automação de consultas, procedures e relatórios internos &middot; time TIC</p>
+      </div>
+      <div class="ref">Data referência<b>04/08/2026</b></div>
+    </div>
+
+    <div class="kpis cols-4">
+      <div class="kpi"><div class="dot">22</div><div><div class="num">22</div><div class="lbl">Consultas no portfólio</div></div></div>
+      <div class="kpi"><div class="dot">18</div><div><div class="num">18 (81,8%)</div><div class="lbl">Concluídas</div></div></div>
+      <div class="kpi"><div class="dot">4</div><div><div class="num">4 (18,2%)</div><div class="lbl">A iniciar</div></div></div>
+      <div class="kpi"><div class="dot">19</div><div><div class="num">19</div><div class="lbl">Em fluxo de validação</div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Resumo por status de entrega</div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Status de entrega</th><th>Consultas</th><th>% do total</th><th>Itens no fluxo de validação</th><th>Ajustes e correções</th></tr></thead>
+          <tbody>
+            <tr><td class="name">Concluído</td><td>18</td><td class="pct">81,8%</td><td>3</td><td>3</td></tr>
+            <tr><td class="name">Em andamento</td><td>0</td><td class="pct">0,0%</td><td>12</td><td>7</td></tr>
+            <tr><td class="name">A iniciar</td><td>4</td><td class="pct">18,2%</td><td>4</td><td>4</td></tr>
+            <tr style="background:#faf9ff;"><td class="name">TOTAL</td><td class="name">22</td><td class="pct">100%</td><td class="name">19</td><td class="name">14</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span>Detalhe das consultas <span class="sub">22 itens &middot; aba "4_Consultas Sankhya"</span></span>
+        <div class="filters">
+          <label>Status</label>
+          <select id="sk-filter-status" onchange="renderSankhya()">
+            <option value="">Todos</option>
+            <option value="Concluído">Concluído</option>
+            <option value="Em Andamento">Em Andamento</option>
+            <option value="A Iniciar">A Iniciar</option>
+          </select>
+          <label>Especialista</label>
+          <select id="sk-filter-esp" onchange="renderSankhya()">
+            <option value="">Todos</option>
+          </select>
+          <input id="sk-filter-search" type="text" placeholder="Buscar consulta ou view..." oninput="renderSankhya()">
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table style="min-width:1400px;">
+          <thead><tr>
+            <th>ID</th><th>Tipo</th><th>Consulta / View</th><th>Especialista</th><th>Demandante</th><th>Prazo</th>
+            <th>Validador</th><th>Status entrega</th><th>Validação</th><th>Status atual</th><th>Observação</th>
+          </tr></thead>
+          <tbody id="sk-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footnote"><b>Fonte:</b> aba "4_Consultas Sankhya" da planilha de indicadores. <b>Observações:</b> a coluna "Status atual" reproduz o segundo campo de status registrado na planilha (após a etapa de validação); alguns itens (ex.: ID 20) têm inconsistências no preenchimento de "Data Validação" na fonte original, e vários prazos aparecem em branco por ainda não terem sido definidos.</div>
+  </section>
+
+  <!-- ===================== GESTÃO DA CAPACIDADE ===================== -->
+  <section id="capacidade" class="panel" style="--h1:#1e1b4b;--h2:#4f46e5;--acc:#4f46e5;">
+    <div class="header">
+      <div class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+      <div>
+        <h2>Plano Semanal de Alocação</h2>
+        <p>44 horas semanais por colaborador &middot; 8h48 por dia útil</p>
+      </div>
+      <div class="ref">Data referência<b>04/08/2026</b></div>
+    </div>
+
+    <div class="footnote" style="margin-bottom:18px;">Cada colaborador totaliza <b>44h semanais</b>: 8h em quatro blocos de 2h mais um bloco complementar diário (registrado na planilha como "1h"; o total semanal indica 0,8h/48min reais para fechar as 44h). Incidentes podem substituir blocos planejados e devem ser registrados como Sustentação.</div>
+
+    <div class="three-col" style="margin-bottom:18px;" id="cap-summary-cards"></div>
+
+    <div class="card">
+      <div class="card-head">Alocação da equipe (132h/semana)</div>
+      <div class="card-body">
+        <div class="stackbar" title="Projetos 74h · Sustentação 39,6h · Gestão 18,4h">
+          <span class="seg-proj" style="width:56.06%"></span>
+          <span class="seg-sust" style="width:30%"></span>
+          <span class="seg-gestao" style="width:13.94%"></span>
+        </div>
+        <div class="legend-row">
+          <span><span class="sq" style="background:#4f46e5;"></span>Projetos / entregas — 74,0h (56,1%)</span>
+          <span><span class="sq" style="background:#c2660a;"></span>Sustentação — 39,6h (30,0%)</span>
+          <span><span class="sq" style="background:#0f766e;"></span>Gestão / cerimônias — 18,4h (13,9%)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span>Agenda semanal por colaborador <span class="sub">clique para alternar</span></span>
+      </div>
+      <div class="card-body">
+        <div class="colab-toggle" id="colab-toggle"></div>
+        <div class="table-scroll">
+          <table class="timetable" id="cap-timetable"></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span>Tabela detalhada dos blocos <span class="sub">75 blocos semanais</span></span>
+        <div class="filters">
+          <label>Colaborador</label>
+          <select id="cap-filter-colab" onchange="renderCapTable()">
+            <option value="">Todos</option>
+            <option value="Bruno Lima">Bruno Lima</option>
+            <option value="Mateus Freitas">Mateus Freitas</option>
+            <option value="Lucas Gomes">Lucas Gomes</option>
+          </select>
+          <label>Dia</label>
+          <select id="cap-filter-dia" onchange="renderCapTable()">
+            <option value="">Todos</option>
+            <option value="Segunda">Segunda</option>
+            <option value="Terça">Terça</option>
+            <option value="Quarta">Quarta</option>
+            <option value="Quinta">Quinta</option>
+            <option value="Sexta">Sexta</option>
+          </select>
+          <label>Tipo</label>
+          <select id="cap-filter-tipo" onchange="renderCapTable()">
+            <option value="">Todos</option>
+            <option value="Projetos / entregas">Projetos / entregas</option>
+            <option value="Sustentação">Sustentação</option>
+            <option value="Gestão / cerimônias">Gestão / cerimônias</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table style="min-width:1300px;">
+          <thead><tr><th>Dia</th><th>Colaborador</th><th>Bloco</th><th>Horas</th><th>Frente / Projeto</th><th>Jira</th><th>Tipo</th><th>Atividade planejada</th><th>Resultado esperado</th></tr></thead>
+          <tbody id="cap-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footnote"><b>Fonte:</b> aba "Gestão Capacidade" da planilha de indicadores. <b>Uso:</b> o plano deve ser revisado semanalmente; incidentes que substituam blocos planejados devem ser registrados como Sustentação para manter a rastreabilidade da capacidade real.</div>
+  </section>
+
+  <!-- ===================== VISÃO GERAL ===================== -->
+  <section id="geral" class="panel" style="--h1:#0f2e26;--h2:#1f5b47;--acc:#1f5b47;">
+    <div class="header">
+      <div class="header-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 8l10 6 10-6-10-6ZM2 16l10 6 10-6M2 12l10 6 10-6"/></svg></div>
+      <div>
+        <h2>Visão Geral da Equipe de Dados e Inovação</h2>
+        <p>Portfólio, escopo e responsabilidades operacionais</p>
+      </div>
+      <div class="ref">Base<b>Jira DI · 04/08/2026</b></div>
+    </div>
+
+    <div class="footnote" style="margin-bottom:18px;">Portfólio baseado nos itens abertos do Jira DI em 04/08/2026 e nas responsabilidades operacionais informadas. Atuação técnica da equipe: DBA, DRE, Engenharia de Dados e Desenvolvimento. <b>A criação de dashboards está fora do escopo.</b></div>
+
+    <div class="kpis cols-4">
+      <div class="kpi"><div class="dot">7</div><div><div class="num">7</div><div class="lbl">Projetos Jira</div></div></div>
+      <div class="kpi"><div class="dot">65</div><div><div class="num">65</div><div class="lbl">Itens abertos</div></div></div>
+      <div class="kpi"><div class="dot">19</div><div><div class="num">19 / 22</div><div class="lbl">Em execução / validação</div></div></div>
+      <div class="kpi"><div class="dot">3</div><div><div class="num">3</div><div class="lbl">Colaboradores &middot; 132h/sem</div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Equipe e divisão do escopo</div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Colaborador</th><th>Cargo</th><th>Escopo principal</th><th>Responsabilidades no fluxo</th><th>Capacidade</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="name">Bruno Lima</td>
+              <td>Tech Lead / DBA / Dev</td>
+              <td>DBA, desenvolvimento, arquitetura de dados, DRE e novas soluções</td>
+              <td class="muted">Priorizar backlog; desenhar arquitetura; administrar bancos; desenvolver soluções; liderar incidentes; revisar entregas</td>
+              <td><span class="pill info"><span class="pip"></span>44 h/sem</span></td>
+            </tr>
+            <tr>
+              <td class="name">Mateus Freitas</td>
+              <td>DRE / Eng. Dados Jr. / Dev Jr.</td>
+              <td>DRE, suporte a banco, replicações, engenharia de dados e desenvolvimento</td>
+              <td class="muted">Operar bancos e replicações; desenvolver cargas e integrações; monitorar confiabilidade; testar; documentar; escalar riscos</td>
+              <td><span class="pill info"><span class="pip"></span>44 h/sem</span></td>
+            </tr>
+            <tr>
+              <td class="name">Lucas Gomes</td>
+              <td>Eng. Dados Sênior / DRE</td>
+              <td>Engenharia de dados, DRE, pipelines, CDC e implementação da arquitetura</td>
+              <td class="muted">Desenvolver pipelines; implementar arquitetura; monitorar confiabilidade e qualidade; testar integridade; conduzir correções e validações</td>
+              <td><span class="pill info"><span class="pip"></span>44 h/sem</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Como trabalhamos projetos, incidentes e mudanças</div>
+      <div class="card-body">
+        <div class="flow-grid">
+          <div class="flow-card">
+            <div class="flow-title">Incidente crítico</div>
+            <div class="flow-desc">Detecção → triagem por Bruno/Mateus → contenção → restauração → evidências e causa raiz → ação preventiva e registro no Jira.</div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-title">Suporte e solicitação</div>
+            <div class="flow-desc">Entrada da demanda → classificação de impacto → execução por Bruno ou Mateus → validação com solicitante → documentação de recorrência.</div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-title">Projeto</div>
+            <div class="flow-desc">Backlog → planejamento e critérios de aceite → desenvolvimento → revisão técnica/testes → validação da área → conclusão e documentação.</div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-title">Mudança arquitetural</div>
+            <div class="flow-desc">Bruno propõe e define o desenho → Lucas implementa nos pipelines/plataforma → Mateus apoia dados, testes e operação → revisão conjunta.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">Portfólio completo e frentes operacionais <span class="sub">10 frentes &middot; Jira DI</span></div>
+      <div class="table-scroll">
+        <table style="min-width:1750px;">
+          <thead><tr>
+            <th>Frente</th><th>Tipo</th><th>Jira</th><th>Situação</th><th>Abertos</th><th>Execução</th><th>Validação</th><th>A iniciar</th><th>Espera</th>
+            <th>Liderança</th><th>Execução (quem)</th><th>Escopo</th><th>Próximo foco</th>
+          </tr></thead>
+          <tbody id="geral-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footnote"><b>Leitura do portfólio:</b> 7 projetos Jira e 65 itens abertos — 19 em execução, 22 em validação, 22 a iniciar e 2 em espera. A criação de dashboards está fora do escopo da equipe. As frentes operacionais (incidentes, replicações e gestão) devem ser registradas no Jira como demandas recorrentes.</div>
+  </section>
+
+</div>
+
+<script>
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+
+/* ============ CONSULTAS SANKHYA ============ */
+const sankhyaData = [
+  [1,"Automação - Consultas e Procedures","VW_FT_CP_EM_ABERTO","Lucas Gomes","Controladoria","29/04/2026","Glaudencio","Concluído","A Iniciar","Em Andamento","Em processo de validação"],
+  [2,"Automação - Consultas e Procedures","VW_FT_CR_EM_ABERTO","Lucas Gomes","Controladoria","04/05/2026","Glaudencio","Concluído","A Iniciar","Em Andamento","Em processo de validação"],
+  [3,"Automação - Consultas e Procedures","VW_FORTES_CADASTRO_DE_RECEITAS_E_DESPESAS","Lucas Gomes","Controladoria","13/05/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [4,"Automação - Consultas e Procedures","VW_FT_CR_EMITIDOS","Lucas Gomes","Controladoria","16/04/2026","Glaudencio","Concluído","A Iniciar","Em Andamento","Em processo de validação"],
+  [5,"Automação - Consultas e Procedures","VW_FT_Rateio_Receitas","Lucas Gomes","Controladoria","16/04/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [6,"Automação - Consultas e Procedures","VW_FT_NF","Lucas Gomes","Controladoria","13/05/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [7,"Automação - Consultas e Procedures","VW_FORTES_SUPRIMENTOS_PEDIDOS","Lucas Gomes","Controladoria","18/05/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [8,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_SALDO","Lucas Gomes","Suprimentos","22/05/2026","Brigida","Concluído","Concluído","Concluído","Validado pelo time de Suprimentos"],
+  [9,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_CENTRAL_MOVIMENTACOES","Lucas Gomes","Suprimentos","27/05/2026","Brigida","Concluído","Em Andamento","Em Andamento","Em processo de validação"],
+  [10,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_ACOMPANHAMENTO_COMPRA","Lucas Gomes","Suprimentos","02/06/2026","Brigida","Concluído","Em Andamento","Em Andamento","Em processo de validação"],
+  [11,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_CATALOGO_MATERIAIS","Lucas Gomes","Suprimentos","10/06/2026","Brigida","Concluído","Em Andamento","Em Andamento","Em processo de validação"],
+  [12,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_INVENTARIO","Lucas Gomes","Suprimentos","17/06/2026","Brigida","Concluído","Em Andamento","Em Andamento","Em processo de validação"],
+  [13,"Automação - Consultas e Procedures","VW_FORTES_DP_PONTO","Mateus Freitas","Controladoria/MIS","—","Glaudencio","A Iniciar","A Iniciar","A Iniciar","Prazo extendido devido a problemas com API da Sankhya"],
+  [14,"Automação - Consultas e Procedures","VW_FT_COLABORADORES","Lucas Gomes","Controladoria / MIS","24/04/2026","Glaudencio","Concluído","Em Andamento","Pendente","Validado"],
+  [15,"Automação - Consultas e Procedures","dbo.GET_DATA_FOLHA_DE_PAGAMENTO","Lucas Gomes","Controladoria","—","Glaudencio","Concluído","Concluído","Concluído","Validado pelo time de Controladoria"],
+  [16,"Automação - Consultas e Procedures","dbo.GET_DATA_LISTAGEM_DE_CONFERENCIA","Lucas Gomes","Controladoria","10/04/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [17,"Automação - Consultas e Procedures","dbo.SP_FT_ABSENTEISMO_JUSTIFICADO","Mateus Freitas","Controladoria / MIS","22/04/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [18,"Automação - Consultas e Procedures","dbo.SP_FT_ABSENTEISMO_INJUSTIFICADO","Mateus Freitas","Controladoria / MIS","24/04/2026","Glaudencio","Concluído","Em Andamento","Pendente","Em processo de validação"],
+  [19,"Automação - Consultas e Procedures","VW_SUPRIMENTOS_SALDO_ENTRADAS_SAIDAS","—","Suprimentos","—","Brigida","A Iniciar","A Iniciar","A Iniciar","—"],
+  [20,"Automação - Consultas e Procedures","VW_CRE_LANCAMENTOS","—","Controladoria","—","Glaudencio","A Iniciar","A Iniciar","A Iniciar","—"],
+  [21,"Montagem de Relatórios Internos - Sankhya","ADIANTAMENTO EM ABERTO","Mateus Freitas","Financeiro","17/06/2026","Liandra","Concluído","Concluído","Concluído","Validado"],
+  [22,"Automação - Consultas e Procedures","AUTOMAÇÃO RELATÓRIO DE ABS - R27 E R09","Jorge Luis","RH / Gestão","—","—","A Iniciar","—","—","—"],
+];
+
+function skStatusPill(s){
+  if(s==="Concluído") return '<span class="pill ok"><span class="pip"></span>Concluído</span>';
+  if(s==="Em Andamento") return '<span class="pill warn"><span class="pip"></span>Em Andamento</span>';
+  if(s==="A Iniciar") return '<span class="pill na"><span class="pip"></span>A Iniciar</span>';
+  if(s==="Pendente") return '<span class="pill risk"><span class="pip"></span>Pendente</span>';
+  return '<span class="muted">'+(s||'—')+'</span>';
+}
+
+function populateSankhyaFilters(){
+  const esp = [...new Set(sankhyaData.map(r=>r[3]).filter(v=>v && v!=="—"))].sort();
+  const sel = document.getElementById('sk-filter-esp');
+  esp.forEach(e=>{
+    const opt = document.createElement('option');
+    opt.value = e; opt.textContent = e;
+    sel.appendChild(opt);
+  });
+}
+
+function renderSankhya(){
+  const status = document.getElementById('sk-filter-status').value;
+  const esp = document.getElementById('sk-filter-esp').value;
+  const search = document.getElementById('sk-filter-search').value.toLowerCase();
+  const rows = sankhyaData.filter(r=>{
+    if(status && r[7]!==status) return false;
+    if(esp && r[3]!==esp) return false;
+    if(search && !(r[2].toLowerCase().includes(search) || r[1].toLowerCase().includes(search))) return false;
+    return true;
+  });
+  document.getElementById('sk-body').innerHTML = rows.map(r=>`
+    <tr>
+      <td class="name">${r[0]}</td>
+      <td class="muted">${r[1]}</td>
+      <td class="name">${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td class="muted">${r[5]}</td>
+      <td>${r[6]}</td>
+      <td>${skStatusPill(r[7])}</td>
+      <td>${skStatusPill(r[8])}</td>
+      <td>${skStatusPill(r[9])}</td>
+      <td class="muted">${r[10]}</td>
+    </tr>`).join('');
+}
+
+/* ============ GESTÃO DA CAPACIDADE ============ */
+const capSummary = [
+  ["Bruno Lima",22.8,11.6,9.6,44.0],
+  ["Mateus Freitas",12.0,28.0,4.0,44.0],
+  ["Lucas Gomes",39.2,0.0,4.8,44.0],
+];
+
+const capData = [
+/* dia, colaborador, bloco, horas, frente, jira, tipo, atividade, resultado */
+["Segunda","Bruno Lima","Bloco 1","2 h","Gestão da equipe","","Gestão / cerimônias","Planejar a sprint e priorizar o backlog da semana","Escopo, prioridades e responsáveis definidos"],
+["Segunda","Bruno Lima","Bloco 2","2 h","DBA / sustentação de TI","","Sustentação","Triar incidentes, acessos, performance e demandas de banco","Fila crítica tratada e riscos registrados"],
+["Segunda","Bruno Lima","Bloco 3","2 h","MF Datalake — Observabilidade Empresarial","DI-385","Projetos / entregas","Revisar arquitetura, dependências e prioridades do Data Lake","Decisões técnicas e próximos passos definidos"],
+["Segunda","Bruno Lima","Bloco 4","2 h","Faturamento — automação de pedidos ERP","DI-953","Projetos / entregas","Evoluir a fundação técnica e integrações do fluxo","Ambiente e integrações preparados"],
+["Terça","Bruno Lima","Bloco 1","2 h","Tech Lead / acompanhamento","","Gestão / cerimônias","Acompanhar o time, revisar impedimentos e orientar decisões","Impedimentos encaminhados e ações combinadas"],
+["Terça","Bruno Lima","Bloco 2","2 h","DBA / sustentação de TI","","Sustentação","Atender banco, consultas, performance e permissões","Demandas operacionais resolvidas"],
+["Terça","Bruno Lima","Bloco 3","2 h","Faturamento — Corte e Religa","DI-955","Projetos / entregas","Desenvolver e validar o fluxo de automação de pedidos","Incremento funcional validado"],
+["Terça","Bruno Lima","Bloco 4","2 h","MF Alô DP","DI-947","Projetos / entregas","Definir arquitetura, integrações e próximo incremento","Próxima entrega estruturada"],
+["Quarta","Bruno Lima","Bloco 1","2 h","Plataforma Airflow","DI-976","Projetos / entregas","Evoluir arquitetura-alvo, padronização e plano de CI/CD","Padrão técnico e implantação definidos"],
+["Quarta","Bruno Lima","Bloco 2","2 h","DBA / sustentação de TI","","Sustentação","Executar manutenção preventiva e suporte a incidentes","Ambiente estável"],
+["Quarta","Bruno Lima","Bloco 3","2 h","Data Lake — estratégia CDC","DI-449","Projetos / entregas","Revisar decisões de CDC, Iceberg, Trino e Airflow com Lucas","Direcionamento arquitetural aprovado"],
+["Quarta","Bruno Lima","Bloco 4","2 h","MF Datalake — arquitetura e governança","DI-385","Projetos / entregas","Trabalhar modelagem, governança e evolução da arquitetura","Arquitetura alinhada às áreas"],
+["Quinta","Bruno Lima","Bloco 1","2 h","Tech Lead / backlog","","Gestão / cerimônias","Refinar histórias, critérios de aceite e prioridades","Backlog pronto para execução"],
+["Quinta","Bruno Lima","Bloco 2","2 h","DBA / sustentação de TI","","Sustentação","Atender suporte a banco e demandas não planejadas","SLA operacional preservado"],
+["Quinta","Bruno Lima","Bloco 3","2 h","Faturamento — Atendimento de Loja","DI-954","Projetos / entregas","Validar automação, integrações e comportamento do fluxo","Pendências de validação tratadas"],
+["Quinta","Bruno Lima","Bloco 4","2 h","Plataforma Airflow","DI-976","Projetos / entregas","Definir padrões de repositório, testes e implantação","Próximo marco técnico preparado"],
+["Sexta","Bruno Lima","Bloco 1","2 h","Gestão da equipe","","Gestão / cerimônias","Revisar semana, capacidade, entregas e próximo backlog","Próxima semana organizada"],
+["Sexta","Bruno Lima","Bloco 2","2 h","DBA / sustentação de TI","","Sustentação","Executar manutenção, alertas e prevenção","Riscos operacionais documentados"],
+["Sexta","Bruno Lima","Bloco 3","2 h","Plataforma Airflow — documentação","DI-984","Projetos / entregas","Produzir padrões, runbooks e transferência de conhecimento","Material técnico atualizado"],
+["Sexta","Bruno Lima","Bloco 4","2 h","MF Datalake — governança","DI-385","Projetos / entregas","Consolidar decisões, riscos e evolução arquitetural","Backlog técnico atualizado"],
+["Segunda","Bruno Lima","Bloco complementar","1 h","DBA / confiabilidade","","Sustentação","Revisar alertas, capacidade e riscos do ambiente de banco","Riscos operacionais registrados"],
+["Terça","Bruno Lima","Bloco complementar","1 h","Gestão técnica e acompanhamento","","Gestão / cerimônias","Atualizar impedimentos, decisões e prioridades técnicas","Ações técnicas alinhadas"],
+["Quarta","Bruno Lima","Bloco complementar","1 h","Arquitetura de dados / DRE","DI-385","Projetos / entregas","Revisar observabilidade, confiabilidade e evolução arquitetural","Decisões de confiabilidade registradas"],
+["Quinta","Bruno Lima","Bloco complementar","1 h","DBA / prevenção de incidentes","","Sustentação","Executar análise preventiva de performance e disponibilidade","Ações preventivas identificadas"],
+["Sexta","Bruno Lima","Bloco complementar","1 h","Revisão de capacidade e backlog","","Gestão / cerimônias","Consolidar capacidade, riscos e prioridades da próxima semana","Planejamento semanal atualizado"],
+
+["Segunda","Mateus Freitas","Bloco 1","2 h","Planejamento da equipe","","Gestão / cerimônias","Participar do planejamento e refinamento","Prioridades da semana compreendidas"],
+["Segunda","Mateus Freitas","Bloco 2","2 h","Suporte a banco de dados","","Sustentação","Atender consultas, acessos, falhas e rotinas","Demandas de banco tratadas"],
+["Segunda","Mateus Freitas","Bloco 3","2 h","Replicações dos discadores","","Sustentação","Monitorar cargas, atrasos e consistência","Replicações acompanhadas"],
+["Segunda","Mateus Freitas","Bloco 4","2 h","Data Lake — ponto do DP","DI-459","Projetos / entregas","Levantar fontes, regras e estrutura da view de ponto","Escopo técnico definido"],
+["Terça","Mateus Freitas","Bloco 1","2 h","Suporte a banco de dados","","Sustentação","Executar suporte, consultas e troubleshooting","Fila operacional reduzida"],
+["Terça","Mateus Freitas","Bloco 2","2 h","Replicações dos discadores","","Sustentação","Validar completude e tratar falhas de sincronização","Cargas consistentes"],
+["Terça","Mateus Freitas","Bloco 3","2 h","Data Lake — ponto do DP","DI-459","Projetos / entregas","Desenvolver ingestão e transformação dos dados","Carga evoluída"],
+["Terça","Mateus Freitas","Bloco 4","2 h","Sankhya — sustentação técnica","DI-2","Sustentação","Investigar falhas, consultas, performance e inconsistências de dados no Sankhya","Incidentes e ajustes técnicos tratados"],
+["Quarta","Mateus Freitas","Bloco 1","2 h","Suporte a banco de dados","","Sustentação","Atender rotinas, performance e permissões","Demandas críticas resolvidas"],
+["Quarta","Mateus Freitas","Bloco 2","2 h","Replicações dos discadores","","Sustentação","Comparar volumes entre origem e destino","Divergências tratadas"],
+["Quarta","Mateus Freitas","Bloco 3","2 h","Data Lake — ponto do DP","DI-459","Projetos / entregas","Implementar modelagem e regras da view","Modelo analítico evoluído"],
+["Quarta","Mateus Freitas","Bloco 4","2 h","Data Lake — qualidade","DI-459","Projetos / entregas","Criar testes e conferir resultados","Evidências de qualidade registradas"],
+["Quinta","Mateus Freitas","Bloco 1","2 h","Suporte a banco de dados","","Sustentação","Executar suporte operacional e manutenção","Ambiente estável"],
+["Quinta","Mateus Freitas","Bloco 2","2 h","Replicações dos discadores","","Sustentação","Tratar alertas, reprocessamentos e documentação","Replicações normalizadas"],
+["Quinta","Mateus Freitas","Bloco 3","2 h","Sankhya — sustentação de dados","DI-2","Sustentação","Corrigir consultas, integrações e rotinas de dados existentes","Rotinas estabilizadas e evidências registradas"],
+["Quinta","Mateus Freitas","Bloco 4","2 h","Data Lake — ponto do DP","DI-459","Projetos / entregas","Integrar a view às camadas do Data Lake","Fluxo integrado"],
+["Sexta","Mateus Freitas","Bloco 1","2 h","Revisão e refinamento","","Gestão / cerimônias","Revisar entregas e preparar a semana seguinte","Prioridades atualizadas"],
+["Sexta","Mateus Freitas","Bloco 2","2 h","Suporte a banco de dados","","Sustentação","Fechar chamados e registrar recorrências","Fila revisada"],
+["Sexta","Mateus Freitas","Bloco 3","2 h","Replicações dos discadores","","Sustentação","Conferir estabilidade e pendências semanais","Resumo de estabilidade concluído"],
+["Sexta","Mateus Freitas","Bloco 4","2 h","Data Lake — ponto do DP","DI-459","Projetos / entregas","Documentar avanço, testes e próximos passos","Entrega preparada"],
+["Segunda","Mateus Freitas","Bloco complementar","1 h","Suporte DBA / fila operacional","","Sustentação","Revisar pendências, acessos e recorrências de banco","Fila operacional atualizada"],
+["Terça","Mateus Freitas","Bloco complementar","1 h","Replicações — monitoramento adicional","","Sustentação","Conferir atrasos, volumes e falhas das replicações","Divergências identificadas ou descartadas"],
+["Quarta","Mateus Freitas","Bloco complementar","1 h","DRE / confiabilidade de dados","","Sustentação","Revisar alertas, qualidade e estabilidade das cargas","Riscos de confiabilidade registrados"],
+["Quinta","Mateus Freitas","Bloco complementar","1 h","Sankhya — sustentação técnica","DI-2","Sustentação","Tratar consultas, integrações e ocorrências técnicas do Sankhya","Pendências técnicas encaminhadas"],
+["Sexta","Mateus Freitas","Bloco complementar","1 h","Documentação operacional e recorrências","","Sustentação","Registrar soluções, causas recorrentes e procedimentos","Base operacional atualizada"],
+
+["Segunda","Lucas Gomes","Bloco 1","2 h","Planejamento técnico","","Gestão / cerimônias","Planejar semana e refinar entregas do Data Lake","Sequência e riscos definidos"],
+["Segunda","Lucas Gomes","Bloco 2","2 h","Data Lake — estratégia CDC","DI-449","Projetos / entregas","Implementar mudanças, inclusões e exclusões","Pipeline CDC evoluído"],
+["Segunda","Lucas Gomes","Bloco 3","2 h","Data Lake — fontes de mudança","DI-1049","Projetos / entregas","Mapear fontes de CHANGE, DELETE e dados novos","Fontes documentadas"],
+["Segunda","Lucas Gomes","Bloco 4","2 h","Implementação da arquitetura","DI-449","Projetos / entregas","Aplicar padrão em Iceberg, Trino e Airflow","Padrão materializado"],
+["Terça","Lucas Gomes","Bloco 1","2 h","Data Lake — compras de suprimentos","DI-395","Projetos / entregas","Tratar ajustes e validação da view de compras","View pronta para validação"],
+["Terça","Lucas Gomes","Bloco 2","2 h","Data Lake — catálogo de materiais","DI-396","Projetos / entregas","Tratar ajustes e validação da view de catálogo","View pronta para validação"],
+["Terça","Lucas Gomes","Bloco 3","2 h","Data Lake — estratégia CDC","DI-449","Projetos / entregas","Evoluir merge incremental, histórico e vigência","Histórico validado"],
+["Terça","Lucas Gomes","Bloco 4","2 h","Trino / Power BI","DI-458","Projetos / entregas","Evoluir piloto de integração nos setores","Piloto avançado"],
+["Quarta","Lucas Gomes","Bloco 1","2 h","Data Lake — estratégia CDC","DI-449","Projetos / entregas","Desenvolver e revisar pipeline de atualização","Incremento concluído"],
+["Quarta","Lucas Gomes","Bloco 2","2 h","Data Lake — testes de integridade","DI-1053","Projetos / entregas","Executar testes e corrigir divergências","Evidências registradas"],
+["Quarta","Lucas Gomes","Bloco 3","2 h","Data Lake — inventário de suprimentos","DI-397","Projetos / entregas","Concluir validação e ajustes da view","Pendências tratadas"],
+["Quarta","Lucas Gomes","Bloco 4","2 h","Data Lake — movimentações de suprimentos","DI-394","Projetos / entregas","Concluir validação da central de movimentações","View estabilizada"],
+["Quinta","Lucas Gomes","Bloco 1","2 h","Data Lake — compras de suprimentos","DI-395","Projetos / entregas","Corrigir pontos da validação","Ajustes concluídos"],
+["Quinta","Lucas Gomes","Bloco 2","2 h","Data Lake — catálogo de materiais","DI-396","Projetos / entregas","Corrigir pontos da validação","Ajustes concluídos"],
+["Quinta","Lucas Gomes","Bloco 3","2 h","Trino / Power BI","DI-458","Projetos / entregas","Implantar e acompanhar piloto de acesso","Piloto funcionando"],
+["Quinta","Lucas Gomes","Bloco 4","2 h","Implementação da arquitetura","DI-449","Projetos / entregas","Aplicar mudanças arquiteturais e revisar desempenho","Arquitetura avaliada"],
+["Sexta","Lucas Gomes","Bloco 1","2 h","Revisão e refinamento técnico","","Gestão / cerimônias","Revisar entregas, débitos e próxima semana","Backlog técnico organizado"],
+["Sexta","Lucas Gomes","Bloco 2","2 h","Data Lake — fontes de mudança","DI-1049","Projetos / entregas","Consolidar fontes, regras e pendências de CDC","Mapeamento finalizado"],
+["Sexta","Lucas Gomes","Bloco 3","2 h","Data Lake — testes de integridade","DI-1053","Projetos / entregas","Consolidar testes, evidências e correções","Pacote de validação atualizado"],
+["Sexta","Lucas Gomes","Bloco 4","2 h","Data Lake — documentação da arquitetura","DI-449","Projetos / entregas","Documentar implementação e decisões","Documentação pronta"],
+["Segunda","Lucas Gomes","Bloco complementar","1 h","Data Lake — observabilidade e DRE","DI-385","Projetos / entregas","Aprimorar monitoramento e confiabilidade dos pipelines","Pontos de observabilidade evoluídos"],
+["Terça","Lucas Gomes","Bloco complementar","1 h","Data Lake — qualidade de pipelines","DI-449","Projetos / entregas","Revisar falhas, reprocessamentos e comportamento do CDC","Pipeline mais resiliente"],
+["Quarta","Lucas Gomes","Bloco complementar","1 h","Data Lake — confiabilidade e testes","DI-1053","Projetos / entregas","Ampliar testes de integridade e cenários de falha","Cobertura de testes ampliada"],
+["Quinta","Lucas Gomes","Bloco complementar","1 h","Data Lake — evolução arquitetural","DI-449","Projetos / entregas","Aplicar melhorias técnicas e revisar desempenho","Arquitetura e desempenho evoluídos"],
+["Sexta","Lucas Gomes","Bloco complementar","1 h","Revisão técnica e débitos","","Gestão / cerimônias","Consolidar débitos técnicos, riscos e prioridades","Backlog técnico revisado"],
+];
+
+const JIRA_BASE = "https://meirelesefreitas-team-ovdvllqs.atlassian.net/browse/";
+const DIAS = ["Segunda","Terça","Quarta","Quinta","Sexta"];
+const BLOCOS = ["Bloco 1","Bloco 2","Bloco 3","Bloco 4","Bloco complementar"];
+
+function tipoClass(t){
+  if(t==="Projetos / entregas") return "t-proj";
+  if(t==="Sustentação") return "t-sust";
+  return "t-gestao";
+}
+function tipoPill(t){
+  if(t==="Projetos / entregas") return '<span class="pill info"><span class="pip"></span>Projetos</span>';
+  if(t==="Sustentação") return '<span class="pill warn"><span class="pip"></span>Sustentação</span>';
+  return '<span class="pill ok"><span class="pip"></span>Gestão</span>';
+}
+
+function renderCapSummaryCards(){
+  const colors = {"Bruno Lima":"#4f46e5","Mateus Freitas":"#4f46e5","Lucas Gomes":"#4f46e5"};
+  document.getElementById('cap-summary-cards').innerHTML = capSummary.map(([nome,proj,sust,gestao,total])=>{
+    const pProj = (proj/total*100).toFixed(0), pSust=(sust/total*100).toFixed(0), pGestao=(gestao/total*100).toFixed(0);
+    return `<div class="cap-card">
+      <div class="cap-name">${nome}</div>
+      <div class="cap-total">${total.toFixed(1).replace('.',',')} h semanais</div>
+      <div class="stackbar">
+        <span class="seg-proj" style="width:${pProj}%"></span>
+        <span class="seg-sust" style="width:${pSust}%"></span>
+        <span class="seg-gestao" style="width:${pGestao}%"></span>
+      </div>
+      <div class="cap-legend-mini">
+        <span>Proj. ${proj.toFixed(1).replace('.',',')}h</span>
+        <span>Sust. ${sust.toFixed(1).replace('.',',')}h</span>
+        <span>Gestão ${gestao.toFixed(1).replace('.',',')}h</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let selectedColab = "Bruno Lima";
+function renderColabToggle(){
+  const nomes = ["Bruno Lima","Mateus Freitas","Lucas Gomes"];
+  document.getElementById('colab-toggle').innerHTML = nomes.map(n=>
+    `<button class="colab-btn ${n===selectedColab?'active':''}" onclick="selectColab('${n}')">${n}</button>`
+  ).join('');
+}
+function selectColab(n){
+  selectedColab = n;
+  renderColabToggle();
+  renderTimetable();
+}
+
+function renderTimetable(){
+  const rows = capData.filter(r=>r[1]===selectedColab);
+  let html = '<thead><tr><th></th>' + DIAS.map(d=>`<th>${d}</th>`).join('') + '</tr></thead><tbody>';
+  BLOCOS.forEach(bloco=>{
+    html += `<tr><td style="font-family:Manrope,sans-serif;font-weight:800;font-size:10.5px;color:var(--slate-500);white-space:nowrap;padding-right:8px;">${bloco.replace('Bloco complementar','Compl.')}</td>`;
+    DIAS.forEach(dia=>{
+      const item = rows.find(r=>r[0]===dia && r[2]===bloco);
+      if(!item){ html += '<td></td>'; return; }
+      const jiraLink = item[5] ? `<a class="tt-jira" href="${JIRA_BASE}${item[5]}" target="_blank" rel="noopener">${item[5]} ↗</a>` : '';
+      html += `<td><div class="tt-cell ${tipoClass(item[6])}">
+        <div class="tt-bloco">${item[3]}</div>
+        <div class="tt-frente">${item[4]}</div>
+        <div class="tt-tipo">${tipoPill(item[6])}</div>
+        <div class="tt-atividade">${item[7]}</div>
+        ${jiraLink}
+      </div></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('cap-timetable').innerHTML = html;
+}
+
+function renderCapTable(){
+  const colab = document.getElementById('cap-filter-colab').value;
+  const dia = document.getElementById('cap-filter-dia').value;
+  const tipo = document.getElementById('cap-filter-tipo').value;
+  const rows = capData.filter(r=>{
+    if(colab && r[1]!==colab) return false;
+    if(dia && r[0]!==dia) return false;
+    if(tipo && r[6]!==tipo) return false;
+    return true;
+  });
+  document.getElementById('cap-body').innerHTML = rows.map(r=>{
+    const jiraLink = r[5] ? `<a class="jira-link" href="${JIRA_BASE}${r[5]}" target="_blank" rel="noopener">${r[5]} ↗</a>` : '<span class="muted">—</span>';
+    return `<tr>
+      <td>${r[0]}</td>
+      <td class="name">${r[1]}</td>
+      <td class="muted">${r[2]}</td>
+      <td>${r[3]}</td>
+      <td class="name">${r[4]}</td>
+      <td>${jiraLink}</td>
+      <td>${tipoPill(r[6])}</td>
+      <td class="muted">${r[7]}</td>
+      <td class="muted">${r[8]}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============ VISÃO GERAL ============ */
+const geralData = [
+  ["MF Datalake — Observabilidade Empresarial","Projeto","DI-385","Em andamento",37,12,15,10,0,"Bruno Lima","Lucas Gomes e Mateus Freitas","Data Lake, CDC, Iceberg, Trino, Power BI, views corporativas, PontoTel e qualidade de dados","Concluir CDC e validações; avançar PontoTel e organização de acesso"],
+  ["Reestruturação, Padronização e CI/CD do Airflow","Projeto","DI-976","A iniciar",9,0,0,9,0,"Bruno Lima","Bruno Lima, com apoio técnico do time","Arquitetura-alvo, padrões de DAG, testes, CI/CD, deploy, segurança, runbooks e capacitação","Diagnóstico do ambiente e definição da arquitetura-alvo"],
+  ["Faturamento — automação de pedidos no ERP","Projeto","DI-3","Em andamento",12,5,7,0,0,"Bruno Lima","Bruno Lima","Automação de pedidos de venda, integrações Sankhya/Airflow, Atendimento de Loja e Corte e Religa","Finalizar validações e estabilizar o fluxo de Corte e Religa"],
+  ["MF GoLive — Precificação com IA","Projeto","DI-707","Em espera",3,0,0,2,1,"Bruno Lima","Mateus Freitas","Precificação com IA, qualidade de extração, revisão assistida e gestão de acesso","Retomar quando houver prioridade e capacidade aprovadas"],
+  ["MF Alô DP — chatbot interno","Projeto","DI-947","Em andamento",1,1,0,0,0,"Bruno Lima","Bruno Lima","Chatbot interno para comunicação e atendimento do Departamento Pessoal","Definir arquitetura, integrações e primeiro incremento utilizável"],
+  ["MF IACOB — Omnichannel + IA","Projeto","DI-785","Em espera",1,0,0,0,1,"Bruno Lima","A definir","Solução omnichannel com componentes de inteligência artificial","Manter no portfólio e reavaliar prioridade"],
+  ["Sankhya — sustentação técnica e dados","Projeto","DI-2","Em andamento",2,1,0,1,0,"Bruno Lima","Mateus Freitas, com orientação de Bruno","Sustentação do Sankhya, consultas SQL, troubleshooting, integrações, correções e qualidade dos dados","Tratar incidentes, corrigir rotinas e estabilizar consultas e integrações"],
+  ["Incidentes e sustentação de banco","Operação contínua","Sem épico","Operação contínua",0,0,0,0,0,"Bruno Lima","Bruno Lima e Mateus Freitas","Acessos, falhas, performance, consultas, manutenção, troubleshooting e prevenção","Registrar recorrências, impacto, causa e ação preventiva no Jira"],
+  ["Replicações de dados dos discadores","Operação contínua","Sem épico","Operação contínua",0,0,0,0,0,"Bruno Lima","Mateus Freitas, com apoio de Bruno","Monitoramento de cargas, completude, atrasos, divergências e reprocessamentos","Criar demanda recorrente no Jira e acompanhar indicadores de estabilidade"],
+  ["Gestão, arquitetura e organização do trabalho","Gestão e arquitetura","Sem épico","Operação contínua",0,0,0,0,0,"Bruno Lima","Toda a equipe","Planejamento de sprint, backlog, capacidade, decisões arquiteturais, riscos e acompanhamento","Revisar semanalmente prioridades, capacidade e impedimentos"],
+];
+
+function situacaoPill(s){
+  if(s==="Em andamento") return '<span class="pill ok"><span class="pip"></span>Em andamento</span>';
+  if(s==="A iniciar") return '<span class="pill na"><span class="pip"></span>A iniciar</span>';
+  if(s==="Em espera") return '<span class="pill warn"><span class="pip"></span>Em espera</span>';
+  return '<span class="pill info"><span class="pip"></span>Operação contínua</span>';
+}
+
+function renderGeral(){
+  document.getElementById('geral-body').innerHTML = geralData.map(r=>{
+    const jira = r[2]==="Sem épico"
+      ? '<a class="jira-link" href="https://meirelesefreitas-team-ovdvllqs.atlassian.net/jira/software/projects/DI/list" target="_blank" rel="noopener">Backlog DI ↗</a>'
+      : `<a class="jira-link" href="${JIRA_BASE}${r[2]}" target="_blank" rel="noopener">${r[2]} ↗</a>`;
+    return `<tr>
+      <td class="name">${r[0]}</td>
+      <td class="muted">${r[1]}</td>
+      <td>${jira}</td>
+      <td>${situacaoPill(r[3])}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+      <td>${r[6]}</td>
+      <td>${r[7]}</td>
+      <td>${r[8]}</td>
+      <td>${r[9]}</td>
+      <td class="muted">${r[10]}</td>
+      <td class="muted" style="max-width:280px;">${r[11]}</td>
+      <td class="muted" style="max-width:240px;">${r[12]}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* init */
+populateSankhyaFilters();
+renderSankhya();
+renderCapSummaryCards();
+renderColabToggle();
+renderTimetable();
+renderCapTable();
+renderGeral();
+</script>
+</body>
+</html>
